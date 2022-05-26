@@ -1,9 +1,14 @@
 import pygame
 import math
+from numpy import save
+
+import settings
+from settings import *
 
 screen_width = 1700
 screen_height = 900
-check_point = ((1124, 728), (1480, 436), (1126, 276), (776, 256), (262, 130), (454, 576), (208, 772))
+check_point = ((1135, 725), (1415, 515), (1465, 275), (1025, 385), (840, 135), (650, 385), (265, 135), (240, 515), (505, 775))
+
 
 class Car:
     def __init__(self, car_file, map_file, pos):
@@ -25,6 +30,11 @@ class Car:
         self.check_flag = False
         self.distance = 0
         self.time_spent = 0
+
+        self.draw_radars = settings.draw_radars
+        self.draw_hitboxes = settings.draw_hitboxes
+        self.draw_checkpoints = settings.draw_checkpoints
+
         for d in range(-90, 120, 45):
             self.check_radar(d)
 
@@ -38,7 +48,7 @@ class Car:
         for i in range(4):
             x = int(self.four_points[i][0])
             y = int(self.four_points[i][1])
-            pygame.draw.circle(screen, (255, 0, 0) , (x, y), 5)
+            pygame.draw.circle(screen, (0, 0, 0) , (x, y), 5)
 
     def draw_radar(self, screen):
         for r in self.radars_for_draw:
@@ -121,7 +131,7 @@ class Car:
             self.pos[1] = screen_height - 120
 
         # caculate 4 collision points
-        self.center = [int(self.pos[0]) + 50, int(self.pos[1]) + 50]
+        self.center = [int(self.pos[0]) + 50, int(self.pos[1]) + 51]
         len = 40
         left_top = [self.center[0] + math.cos(math.radians(360 - (self.angle + 30))) * len, self.center[1] + math.sin(math.radians(360 - (self.angle + 30))) * len]
         right_top = [self.center[0] + math.cos(math.radians(360 - (self.angle + 150))) * len, self.center[1] + math.sin(math.radians(360 - (self.angle + 150))) * len]
@@ -130,14 +140,15 @@ class Car:
         self.four_points = [left_top, right_top, left_bottom, right_bottom]
 
 class PyGame2D:
+
+
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont("Arial", 30)
         self.car = Car('car.png', 'map.png', [650, 725])
         self.game_speed = 60
-        self.mode = 0
 
     def action(self, action):
         if action == 0:
@@ -191,28 +202,46 @@ class PyGame2D:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_m:
-                    self.mode += 1
-                    self.mode = self.mode % 3
 
         self.screen.blit(self.car.map, (0, 0))
 
-        if self.mode == 1:
-            self.screen.fill((0, 0, 0))
 
         self.car.radars_for_draw.clear()
         for d in range(-90, 120, 45):
             self.car.check_radar_for_draw(d)
 
-        pygame.draw.circle(self.screen, (255, 255, 0), check_point[self.car.current_check], 70, 1)
-        self.car.draw_collision(self.screen)
-        self.car.draw_radar(self.screen)
+        if self.car.draw_checkpoints:
+            pygame.draw.circle(self.screen, (255, 255, 0), check_point[self.car.current_check], 70, 1)
+        if self.car.draw_hitboxes:
+            self.car.draw_collision(self.screen)
+        if self.car.draw_radars:
+            self.car.draw_radar(self.screen)
         self.car.draw(self.screen)
 
 
         pygame.display.flip()
         self.clock.tick(self.game_speed)
+
+    def handle_events(self, content):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    save('data.npy', content)
+                    print("data saved to file")
+                elif event.key == pygame.K_r:
+                    print("radars view toggled")
+                    self.car.draw_radars = self.car.draw_radars ^ 1
+                    settings.draw_radars = self.car.draw_radars
+                elif event.key == pygame.K_t:
+                    print("hitboxes view toggled")
+                    self.car.draw_hitboxes = self.car.draw_hitboxes ^ 1
+                    settings.draw_hitboxes = self.car.draw_hitboxes
+                elif event.key == pygame.K_y:
+                    print("checkpoints view toggled")
+                    self.car.draw_checkpoints = self.car.draw_checkpoints ^ 1
+                    settings.draw_checkpoints = self.car.draw_checkpoints
+
+
 
 
 def get_distance(p1, p2):

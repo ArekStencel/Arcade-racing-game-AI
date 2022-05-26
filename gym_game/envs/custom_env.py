@@ -25,3 +25,6 @@ class CustomEnv(gym.Env):
 
     def render(self, mode="human", close=False):
         self.pygame.view()
+
+    def handle_events(self, table):
+        self.pygame.handle_events(table)

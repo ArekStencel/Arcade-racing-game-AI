@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from numpy import load
 import math
 import random
 
@@ -16,6 +17,9 @@ def simulate():
 
         # AI tries up to MAX_TRY times
         for t in range(MAX_TRY): #każda klatak animacji
+
+            # save current q_table to file
+            env.handle_events(q_table)
 
             # In the beginning, do random action to learn
             if random.uniform(0, 1) < epsilon: #jeżeli epsilon jest większy od randomowego ułamka - wykonaj randomową akcję
@@ -59,5 +63,7 @@ if __name__ == "__main__":
     learning_rate = 0.1
     gamma = 0.6
     num_box = tuple((env.observation_space.high + np.ones(env.observation_space.shape)).astype(int))
+
+    #q_table = load('data.npy')
     q_table = np.zeros(num_box + (env.action_space.n,))
     simulate()
