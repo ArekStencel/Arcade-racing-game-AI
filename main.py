@@ -65,15 +65,15 @@ if __name__ == "__main__":
     MAX_TRY = 200000
     epsilon = 1
     epsilon_decay = 0.999
-    learning_rate = 0.1
-    gamma = 0.6
+    learning_rate = 0.2
+    gamma = 0.75
     num_box = tuple((env.observation_space.high + np.ones(env.observation_space.shape)).astype(int))
 
-    mode = 1  # # #   1 - learn from random steps(random fraction)      other - race from array knowledge
+    mode = 2  # # #   1 - learn from random steps(random fraction)      other - race from array knowledge
     if mode == 1:
         q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
     else:
         #q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
-        q_table = load('./data/data_copy4900_decay099.npy')  #saved q_table
+        q_table = load('./data/data2200lr0.2gamma075.npy')  #saved q_table
 
     simulate()
