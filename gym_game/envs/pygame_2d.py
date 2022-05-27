@@ -7,7 +7,7 @@ from settings import *
 
 screen_width = 1700
 screen_height = 900
-check_point = ((1135, 725), (1415, 515), (1465, 275), (970, 315), (840, 135), (710, 315), (265, 135), (240, 515), (505, 775))
+check_point = ((1135, 725), (1415, 515), (1465, 275), (970, 315), (840, 135), (710, 315), (265, 205), (240, 515), (505, 775))
 
 
 class Car:
@@ -147,7 +147,7 @@ class PyGame2D:
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.clock = pygame.time.Clock()
-        self.car = Car('car.png', 'map.png', [650, 725])
+        self.car = Car('./assets/car.png', './assets/map.png', [650, 725])
         self.game_speed = 60
 
     def action(self, action):
@@ -226,7 +226,7 @@ class PyGame2D:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    save('data.npy', content)
+                    save('./data/data.npy', content)
                     print("data saved to file")
                 elif event.key == pygame.K_r:
                     print("radars view toggled")
