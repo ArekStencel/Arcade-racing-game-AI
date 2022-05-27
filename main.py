@@ -64,7 +64,7 @@ if __name__ == "__main__":
     MAX_EPISODES = 999999
     MAX_TRY = 200000
     epsilon = 1
-    epsilon_decay = 0.99
+    epsilon_decay = 0.999
     learning_rate = 0.1
     gamma = 0.6
     num_box = tuple((env.observation_space.high + np.ones(env.observation_space.shape)).astype(int))
@@ -74,6 +74,6 @@ if __name__ == "__main__":
         q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
     else:
         #q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
-        q_table = load('data.npy')  #saved q_table
+        q_table = load('data_copy4900.npy')  #saved q_table
 
     simulate()
