@@ -22,10 +22,15 @@ def simulate():
             env.handle_events(q_table)
 
             # In the beginning, do random action to learn
-            if random.uniform(0, 1) < epsilon: #jeżeli epsilon jest większy od randomowego ułamka - wykonaj randomową akcję
-                action = env.action_space.sample()
+
+            if mode == 1:
+                if random.uniform(0, 1) < epsilon: #jeżeli epsilon jest większy od randomowego ułamka - wykonaj randomową akcję
+                    action = env.action_space.sample()
+                else:
+                    action = np.argmax(q_table[state]) #jeżeli inaczej to za pomocą arejki sprawdź jaka akcja jest najlepsza dla danego układu radarów
             else:
-                action = np.argmax(q_table[state]) #jeżeli inaczej to za pomocą arejki sprawdź jaka akcja jest najlepsza dla danego układu radarów
+                action = np.argmax(q_table[state])
+
             # Do action and get result
             next_state, reward, done, _ = env.step(action) #wykonaj te akcję i przypisz jej wyniki do następnego state
             total_reward += reward #dodajemy reward danej klatki animacji do puli reward dla całego przejazdu
@@ -56,14 +61,19 @@ def simulate():
 
 if __name__ == "__main__":
     env = gym.make("Pygame-v0")
-    MAX_EPISODES = 99999
-    MAX_TRY = 20000
+    MAX_EPISODES = 999999
+    MAX_TRY = 200000
     epsilon = 1
     epsilon_decay = 0.99
     learning_rate = 0.1
     gamma = 0.6
     num_box = tuple((env.observation_space.high + np.ones(env.observation_space.shape)).astype(int))
 
-    #q_table = load('data.npy')
-    q_table = np.zeros(num_box + (env.action_space.n,))
+    mode = 1  # # #   1 - learn from random steps(random fraction)      other - race from array knowledge
+    if mode == 1:
+        q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
+    else:
+        #q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
+        q_table = load('data.npy')  #saved q_table
+
     simulate()
