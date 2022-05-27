@@ -35,10 +35,10 @@ class Car:
         self.draw_hitboxes = settings.draw_hitboxes
         self.draw_checkpoints = settings.draw_checkpoints
 
-        for d in range(-90, 95, 30):
+        for d in range(-90, 95, 45):
             self.check_radar(d)
 
-        for d in range(-90, 95, 30):
+        for d in range(-90, 95, 45):
             self.check_radar_for_draw(d)
 
     def draw(self, screen):
@@ -163,7 +163,7 @@ class PyGame2D:
         self.car.check_checkpoint()
 
         self.car.radars.clear()
-        for d in range(-90, 95, 30):
+        for d in range(-90, 95, 45):
             self.car.check_radar(d)
 
     def evaluate(self):
@@ -191,7 +191,7 @@ class PyGame2D:
     def observe(self):
         # return state
         radars = self.car.radars
-        ret = [0, 0, 0, 0, 0, 0, 0]
+        ret = [0, 0, 0, 0, 0]
         for i, r in enumerate(radars):
             ret[i] = int(r[1] / 30)
 
@@ -207,7 +207,7 @@ class PyGame2D:
 
 
         self.car.radars_for_draw.clear()
-        for d in range(-90, 95, 30):
+        for d in range(-90, 95, 45):
             self.car.check_radar_for_draw(d)
 
         if self.car.draw_checkpoints:
