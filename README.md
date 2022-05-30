@@ -3,6 +3,7 @@ Arcade racing game ai created using python and opengym ai <br />
 r - toggle radars <br />
 t - toggle hitboxes <br />
 y - toggle checkpoints <br />
+u - toggle reward <br />
 s - save q_table
 
 # Tech Stack:

@@ -9,7 +9,6 @@ screen_width = 1700
 screen_height = 900
 check_point = ((1135, 725), (1415, 515), (1465, 275), (970, 315),(970,300),(970,170),(840, 135), (710, 315), (265, 205), (240, 515), (505, 775))
 
-
 class Car:
     def __init__(self, car_file, map_file, pos):
         self.surface = pygame.image.load(car_file)
@@ -30,10 +29,10 @@ class Car:
         self.check_flag = False
         self.distance = 0
         self.time_spent = 0
-
         self.draw_radars = settings.draw_radars
         self.draw_hitboxes = settings.draw_hitboxes
         self.draw_checkpoints = settings.draw_checkpoints
+        self.draw_rewards = settings.draw_rewards
 
         for d in range(-90, 95, 45):
             self.check_radar(d)
@@ -140,15 +139,14 @@ class Car:
         self.four_points = [left_top, right_top, left_bottom, right_bottom]
 
 class PyGame2D:
-
-
-
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.clock = pygame.time.Clock()
         self.car = Car('./assets/car.png', './assets/map.png', [650, 725])
+        self.font = pygame.font.SysFont("Arial", 30)
         self.game_speed = 60
+        self.total_reward = 0
 
     def action(self, action):
         if action == 0:
@@ -179,6 +177,8 @@ class PyGame2D:
 
         elif self.car.goal:
             reward = 10000
+
+        self.total_reward += reward
         return reward
 
     def is_done(self):
@@ -197,6 +197,7 @@ class PyGame2D:
 
         return tuple(ret)
 
+
     def view(self):
         # draw game
         for event in pygame.event.get():
@@ -204,7 +205,6 @@ class PyGame2D:
                 done = True
 
         self.screen.blit(self.car.map, (0, 0))
-
 
         self.car.radars_for_draw.clear()
         for d in range(-90, 95, 45):
@@ -218,9 +218,15 @@ class PyGame2D:
             self.car.draw_radar(self.screen)
         self.car.draw(self.screen)
 
+        if self.car.draw_rewards:
+            text = self.font.render(str(self.total_reward), True, (255, 255, 0))
+            text_rect = text.get_rect()
+            text_rect.center = (50, 50)
+            self.screen.blit(text, text_rect)
 
         pygame.display.flip()
         self.clock.tick(self.game_speed)
+
 
     def handle_events(self, content):
         for event in pygame.event.get():
@@ -240,8 +246,10 @@ class PyGame2D:
                     print("checkpoints view toggled")
                     self.car.draw_checkpoints = self.car.draw_checkpoints ^ 1
                     settings.draw_checkpoints = self.car.draw_checkpoints
-
-
+                elif event.key == pygame.K_u:
+                    print("reward view toggled")
+                    self.car.draw_rewards = self.car.draw_rewards ^ 1
+                    settings.draw_rewards = self.car.draw_rewards
 
 
 def get_distance(p1, p2):
