@@ -100,7 +100,7 @@ class Car:
             self.check_flag = True
             if self.current_check >= len(check_point):
                 self.current_check = 0
-                self.goal = True
+                #self.goal = True
             else:
                 self.goal = False
 

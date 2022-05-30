@@ -74,6 +74,6 @@ if __name__ == "__main__":
         q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
     else:
         #q_table = np.zeros(num_box + (env.action_space.n,))  # empty q_table
-        q_table = load('./data/data2200lr0.2gamma075.npy')  #saved q_table
+        q_table = load('./data/data.npy')  #saved q_table
 
     simulate()
