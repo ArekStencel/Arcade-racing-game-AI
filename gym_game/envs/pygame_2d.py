@@ -7,7 +7,7 @@ from settings import *
 
 screen_width = 1700
 screen_height = 900
-check_point = ((1135, 725), (1415, 515), (1465, 275), (970, 315),(970,300),(970,170),(840, 135), (710, 315), (265, 205), (240, 515), (505, 775))
+check_point = ((1135, 725), (1415, 515), (1465, 275), (970, 315), (970,300), (970,170), (840, 135), (710, 315), (265, 205), (240, 515), (505, 775))
 
 class Car:
     def __init__(self, car_file, map_file, pos):
@@ -99,21 +99,20 @@ class Car:
             self.check_flag = True
             if self.current_check >= len(check_point):
                 self.current_check = 0
-                #self.goal = True
             else:
                 self.goal = False
 
         self.cur_distance = dist
 
     def update(self):
-        #check speed
+        # sprawdź prędkość
         self.speed -= 0.5
         if self.speed > 10:
             self.speed = 10
         if self.speed < 1:
             self.speed = 1
 
-        #check position
+        # sprawdź pozycje
         self.rotate_surface = rot_center(self.surface, self.angle)
         self.pos[0] += math.cos(math.radians(360 - self.angle)) * self.speed
         if self.pos[0] < 20:
@@ -129,7 +128,7 @@ class Car:
         elif self.pos[1] > screen_height - 120:
             self.pos[1] = screen_height - 120
 
-        # caculate 4 collision points
+        # oblicz wszystkie 4 punkty kolizyjne
         self.center = [int(self.pos[0]) + 50, int(self.pos[1]) + 51]
         len = 40
         left_top = [self.center[0] + math.cos(math.radians(360 - (self.angle + 30))) * len, self.center[1] + math.sin(math.radians(360 - (self.angle + 30))) * len]
@@ -188,8 +187,9 @@ class PyGame2D:
             return True
         return False
 
+    # zwraca state'a
     def observe(self):
-        # return state
+        
         radars = self.car.radars
         ret = [0, 0, 0, 0, 0]
         for i, r in enumerate(radars):
@@ -197,19 +197,15 @@ class PyGame2D:
 
         return tuple(ret)
 
-
+    # rysuj gre
     def view(self):
-        # draw game
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-
         self.screen.blit(self.car.map, (0, 0))
 
         self.car.radars_for_draw.clear()
         for d in range(-90, 95, 45):
             self.car.check_radar_for_draw(d)
 
+        # sprawdzamy czy mamy wyrenderować konkretny element
         if self.car.draw_checkpoints:
             pygame.draw.circle(self.screen, (255, 255, 0), check_point[self.car.current_check], 70, 1)
         if self.car.draw_hitboxes:
@@ -218,6 +214,7 @@ class PyGame2D:
             self.car.draw_radar(self.screen)
         self.car.draw(self.screen)
 
+        # czy pokazać wynik
         if self.car.draw_rewards:
             text = self.font.render(str(self.total_reward), True, (255, 255, 0))
             text_rect = text.get_rect()
@@ -227,7 +224,8 @@ class PyGame2D:
         pygame.display.flip()
         self.clock.tick(self.game_speed)
 
-
+    # skróty klawiszowe odpowiedzialne za włączenie/wyłączenie
+    # radarów, checkpointów, zapisu, hitboxów, punktów
     def handle_events(self, content):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
